@@ -41,6 +41,6 @@ jobs:
           REDIS_PASSWORD=${{ secrets.ENV_REDIS_PASSWORD }}
           EOT
 
-          docker compose down
-          docker compose up -d --build
+          docker-compose down
+          docker-compose up -d --build
           EOF
