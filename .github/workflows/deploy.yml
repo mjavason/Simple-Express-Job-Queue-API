@@ -1,0 +1,46 @@
+name: Deploy to GCP VM
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GC_VM_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.GC_VM_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        run: |
+          ssh ${{ secrets.GC_VM_USER }}@${{ secrets.GC_VM_HOST }} << 'EOF'
+            set -e
+
+            REPO_DIR=/home/$USER/simple-express-job-queue-api
+
+            if [ ! -d "$REPO_DIR" ]; then
+              git clone git@github.com:mjavason/simple-express-job-queue-api.git "$REPO_DIR"
+            fi
+
+            cd "$REPO_DIR"
+            git pull origin main
+
+            cat > .env <<EOT
+              PORT=${{ secrets.ENV_PORT }}
+              BASE_URL=${{ secrets.ENV_BASE_URL }}
+              REDIS_HOST=${{ secrets.ENV_REDIS_HOST }}
+              REDIS_PORT=${{ secrets.ENV_REDIS_PORT }}
+              REDIS_PASSWORD=${{ secrets.ENV_REDIS_PASSWORD }}
+              EOT
+
+            docker compose down
+            docker compose up -d --build
+          EOF
