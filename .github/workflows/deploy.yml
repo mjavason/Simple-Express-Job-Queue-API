@@ -39,6 +39,13 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
           fi
 
+          # Add user to docker group if not already added
+          if ! groups $USER | grep -q docker; then
+            sudo usermod -aG docker $USER
+            echo "Added user to docker group. Deployment will fail this time but succeed on next push."
+            exit 1
+          fi
+
           cat > .env << EOT
           PORT=${{ secrets.ENV_PORT }}
           BASE_URL=${{ secrets.ENV_BASE_URL }}
