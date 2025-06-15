@@ -22,25 +22,25 @@ jobs:
       - name: Deploy via SSH
         run: |
           ssh ${{ secrets.GC_VM_USER }}@${{ secrets.GC_VM_HOST }} << 'EOF'
-            set -e
+          set -e
 
-            REPO_DIR=/home/$USER/simple-express-job-queue-api
+          REPO_DIR=/home/$USER/simple-express-job-queue-api
 
-            if [ ! -d "$REPO_DIR" ]; then
-              git clone git@github.com:mjavason/simple-express-job-queue-api.git "$REPO_DIR"
-            fi
+          if [ ! -d "$REPO_DIR" ]; then
+            git clone git@github.com:mjavason/simple-express-job-queue-api.git "$REPO_DIR"
+          fi
 
-            cd "$REPO_DIR"
-            git pull origin main
+          cd "$REPO_DIR"
+          git pull origin main
 
-            cat > .env <<EOT
-              PORT=${{ secrets.ENV_PORT }}
-              BASE_URL=${{ secrets.ENV_BASE_URL }}
-              REDIS_HOST=${{ secrets.ENV_REDIS_HOST }}
-              REDIS_PORT=${{ secrets.ENV_REDIS_PORT }}
-              REDIS_PASSWORD=${{ secrets.ENV_REDIS_PASSWORD }}
-              EOT
+          cat > .env << EOT
+          PORT=${{ secrets.ENV_PORT }}
+          BASE_URL=${{ secrets.ENV_BASE_URL }}
+          REDIS_HOST=${{ secrets.ENV_REDIS_HOST }}
+          REDIS_PORT=${{ secrets.ENV_REDIS_PORT }}
+          REDIS_PASSWORD=${{ secrets.ENV_REDIS_PASSWORD }}
+          EOT
 
-            docker compose down
-            docker compose up -d --build
+          docker compose down
+          docker compose up -d --build
           EOF

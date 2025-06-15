@@ -5,6 +5,8 @@ services:
     expose:
       - '5000'
     restart: always
+    networks:
+      - app-network
 
   nginx:
     image: nginx:alpine
@@ -16,3 +18,9 @@ services:
     depends_on:
       - app
     restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
