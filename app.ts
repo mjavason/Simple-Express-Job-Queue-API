@@ -158,7 +158,7 @@ app.get('/api', async (req: Request, res: Response) => {
  *         description: Bad request.
  */
 app.get('/', (req: Request, res: Response) => {
-  return res.send({ message: 'API is Live!', envs: process.env });
+  return res.send({ message: 'API is Live!' });
 });
 
 /**
