@@ -33,6 +33,12 @@ jobs:
           cd "$REPO_DIR"
           git pull origin main
 
+          # Install docker-compose if not present
+          if ! command -v docker-compose &> /dev/null; then
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+          fi
+
           cat > .env << EOT
           PORT=${{ secrets.ENV_PORT }}
           BASE_URL=${{ secrets.ENV_BASE_URL }}
